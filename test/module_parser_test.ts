@@ -17,4 +17,9 @@ describe('Module Parser', () => {
       const result = ModuleParser(`${S.MODULE_DECLARATION}\n${S.IMPORT_LIST}\n${S.REST_OF_MODULE}`)
       expect(S.ExpectedModule).to.deep.equal(result)
    })
+
+   it('should parse port modules declarations', () => {
+      const result = ModuleParser(`port ${S.MODULE_DECLARATION}`)
+      expect({ ...S.ExpectedModule, type: 'port-module', imports: [] }).to.deep.equal(result)
+   })
 })

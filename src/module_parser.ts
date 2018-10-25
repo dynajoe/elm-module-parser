@@ -20,18 +20,18 @@ export type Exposed = ExposedAll | ExposedFunction | ExposedType | ExposedConstr
 
 export interface ImportStatement {
    type: 'import'
-   location: Location
    module: string
    alias: string
    exposing: Exposed[]
+   location: Location
 }
 
 export interface Module {
-   type: 'module'
-   location: Location
-   module: string
+   type: 'module' | 'port-module'
+   name: string
    exposing: Exposed[]
    imports: ImportStatement[]
+   location: Location
 }
 
 export const ModuleParser = loadParser<Module>('elm_module_parser')

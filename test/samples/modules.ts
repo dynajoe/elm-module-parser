@@ -87,7 +87,7 @@ export const ExpectedModule: Module = {
       column: 1,
    },
    type: 'module',
-   module: 'Modules.Foo.Bar',
+   name: 'Modules.Foo.Bar',
    exposing: [
       {
          type: 'constructor',

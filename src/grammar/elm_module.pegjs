@@ -39,6 +39,9 @@ ExposingAllToken
 AsToken
   = "as" Ws __
 
+PortToken
+  = "port" Ws __
+
 ModuleToken
   = "module" Ws __
 
@@ -61,13 +64,14 @@ Comment
 ModuleAlias = AsToken moduleName:ModuleName { return moduleName; }
 
 ModuleDeclaration "module declaration"
-  = ModuleToken
+  = port:PortToken?
+    ModuleToken
     moduleName:ModulePath __
     exposing:ModuleExports? {
       return {
         location: location().start,
-        type: 'module',
-        module: moduleName,
+        type: port ? 'port-module' : 'module',
+        name: moduleName,
         exposing: exposing,
       };
    }
@@ -128,7 +132,6 @@ Module
     statements:SourceElements? {
     return {
       ...module,
-      type: "module",
       imports: statements ? statements.filter(s => s.type === 'import') : []
     };
   }
