@@ -4,7 +4,7 @@
   "description": "Parses Elm module declaration and import statements.",
   "main": "dist/src/index.js",
   "scripts": {
-    "prebuild": "rimraf 'src/**/*.js' 'src/**/*.map' 'test/**/*.js' 'test/**/*.map'",
+    "prebuild": "rimraf 'src/**/*.js' 'src/**/*.map' 'test/**/*.js' 'test/**/*.map' dist",
     "build-parser": "mkdir -p ./dist/parsers/ && pegjs -o ./dist/parsers/elm_module_parser.js ./src/grammar/elm_module.pegjs",
     "build-ts": "tsc",
     "build": "npm run build-parser && npm run build-ts",
