@@ -1,0 +1,18 @@
+{
+  "name": "elm-module-parser",
+  "version": "0.0.1",
+  "description": "Parses Elm module declaration and import statements.",
+  "main": "index.js",
+  "scripts": {
+    "build-parser": "mkdir -p ./dist/parsers/ && pegjs -o ./dist/parsers/elm_module_parser.js ./src/grammar/elm_module.pegjs",
+    "build-ts": "tsc",
+    "build": "npm run build-parser && npm run build-ts"
+  },
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^10.12.0",
+    "pegjs": "^0.10.0",
+    "typescript": "^3.1.3"
+  }
+}
