@@ -22,7 +22,7 @@ export type FunctionDeclaration = { type: 'function-definition'; name: string; l
 
 export type TypeAliasDeclaration = { type: 'type-alias'; name: string; location: Location }
 
-export type CustomTypeDeclaration = { type: 'type-alias'; name: string; location: Location }
+export type CustomTypeDeclaration = { type: 'custom-type'; name: string; location: Location }
 
 export type TypeDeclaration = TypeAliasDeclaration | CustomTypeDeclaration
 export interface ImportStatement {

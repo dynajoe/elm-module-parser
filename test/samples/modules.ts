@@ -78,6 +78,12 @@ view model =
                 )
                 model.values
         ]
+
+type alias Model =
+    { a : A
+    , bbbb : B
+    , cDEfG : C
+    }
 `
 
 export const ExpectedModule: Module = {
@@ -330,5 +336,24 @@ export const ExpectedModule: Module = {
          },
       },
    ],
-   types: [],
+   types: [
+      {
+         type: 'custom-type',
+         name: 'Msg',
+         location: {
+            offset: 1141,
+            line: 49,
+            column: 1,
+         },
+      },
+      {
+         type: 'type-alias',
+         name: 'Model',
+         location: {
+            offset: 1793,
+            line: 78,
+            column: 1,
+         },
+      },
+   ],
 }

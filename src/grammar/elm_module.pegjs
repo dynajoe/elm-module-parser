@@ -58,10 +58,10 @@ ImportToken
   = "import" Ws __
 
 TypeAliasToken
-  = "type alias " Ws __
+  = "type alias" Ws __
 
 TypeToken
-  = "type alias " Ws __
+  = "type" Ws __
 
 SingleLineComment
   = "--" [^\n]* Ws*
