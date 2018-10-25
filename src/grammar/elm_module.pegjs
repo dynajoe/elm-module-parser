@@ -12,12 +12,15 @@
   }
 }
 
-start
-  = __ program:Program __
-    EOF { return program; }
+Start
+  = __ module:Module __
+    EOF { return module; }
 
 __ "ignored"
   = (Ws / Comment)*
+
+Ws
+  = [ \r\n\t]
 
 LParen = __ "(" __
 
@@ -27,11 +30,39 @@ LBrace = __ "{" __
 
 RBrace = __ "}" __
 
+Comma
+  = __ "," __
+
+ExposingAllToken
+  = ".."
+
+AsToken
+  = "as" Ws __
+
+ModuleToken
+  = "module" Ws __
+
+ExposingToken
+  = "exposing" Ws __
+
+ImportToken
+  = "import" Ws __
+
+SingleLineComment
+  = "--" [^\n]* Ws*
+
+MultiLineComment
+  = "{-" (!"-}" ( MultiLineComment / . ))* "-}" Ws*
+
+Comment
+  = SingleLineComment
+  / MultiLineComment
+
 ModuleAlias = AsToken moduleName:ModuleName { return moduleName; }
 
 ModuleDeclaration "module declaration"
   = ModuleToken
-    moduleName:ModulePath
+    moduleName:ModulePath __
     exposing:ModuleExports? {
       return {
         location: location().start,
@@ -43,20 +74,20 @@ ModuleDeclaration "module declaration"
 
 ImportStatement "import statement"
   = ImportToken
-    moduleName:ModulePath
-    alias:ModuleAlias?
+    moduleName:ModulePath __
+    alias:ModuleAlias? __
     exposing:ModuleExports? {
       return {
         location: location().start,
         type: 'import',
         module: moduleName,
         alias: alias,
-        exposing: exposing,
+        exposing: exposing || [],
       };
     }
 
 ConstructorExport
-  = moduleName:ModuleName LParen ExposingAll RParen {
+  = moduleName:ModuleName LParen ExposingAllToken RParen {
       return {
         type: 'constructor',
         name: moduleName,
@@ -64,7 +95,7 @@ ConstructorExport
     }
 
 ExportedModule
-  = ExposingAll { return { type: 'all' }; }
+  = ExposingAllToken { return { type: 'all' }; }
   / fn:FunctionName { return { type: 'function', name: fn }; }
   / ctor:ConstructorExport  { return ctor; }
   / module:ModuleName { return { type: 'type', name: module }; }
@@ -79,57 +110,26 @@ ModuleExports
       return exposing;
     }
 
-SingleLineComment
-  = "--" [^\n]* Ws*
-
-MultiLineComment
-  = "{-" (!"-}" ( MultiLineComment / . ))* "-}" Ws*
-
-Comment
-  = SingleLineComment
-  / MultiLineComment
-
-Comma
-  = Ws* "," Ws*
-
-ExposingAll
-  = ".."
-
-Ws
-  = [ \r\n\t]
-
 FunctionName
-  = ([a-z][a-z0-9]+)+ { return text().trim(); }
+  = ([a-z][a-z0-9]i*)+ { return text().trim(); }
   / LParen [:+-]+ RParen { return text().trim(); }
 
 ModulePath
-  = head:ModuleName tail:("." ModuleName)* { return text().trim();}
+  = head:ModuleName tail:("." ModuleName)* { return text().trim(); }
 
 ModuleName
   = ([A-Z][a-z0-9]i*)+ Ws* { return text().trim(); }
 
-AsToken
-  = "as" Ws+
-
-ModuleToken
-  = Ws* "module" Ws+
-
-ExposingToken
-  = "exposing" Ws+
-
-ImportToken
-  = "import" Ws+
-
 Statement
   = ImportStatement
 
-Program
+Module
   = module:ModuleDeclaration
     statements:SourceElements? {
     return {
       ...module,
-      type: "Program",
-      statements: statements
+      type: "module",
+      imports: statements ? statements.filter(s => s.type === 'import') : []
     };
   }
 
