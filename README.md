@@ -1,6 +1,6 @@
 # Module Parser for the Elm Programming Language
 
-Built using PEG.js to parse module declaration and import statements. Parsing is done synchronously and errors are thrown indicating parse errors.
+Built using PEG.js to parse module declaration, import statements, type names, and function names. Parsing is done synchronously and errors are thrown indicating parse errors.
 
 Installation:
 

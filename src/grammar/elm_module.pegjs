@@ -30,6 +30,12 @@ LBrace = __ "{" __
 
 RBrace = __ "}" __
 
+Equals
+  = __ "=" __
+
+Colon
+  = __ ":" __
+
 Comma
   = __ "," __
 
@@ -50,6 +56,12 @@ ExposingToken
 
 ImportToken
   = "import" Ws __
+
+TypeAliasToken
+  = "type alias " Ws __
+
+TypeToken
+  = "type alias " Ws __
 
 SingleLineComment
   = "--" [^\n]* Ws*
@@ -126,13 +138,26 @@ ModuleName
 
 Statement
   = ImportStatement
+  / TypeAlias
+  / CustomType
+  / FunctionDeclaration
+
+TypeAlias "type alias"
+  = TypeAliasToken name:ModuleName Equals { return { type: 'type-alias', name: name, location: location().start, }; }
+
+CustomType "custom type declaration"
+  = TypeToken name:ModuleName Equals { return { type: 'custom-type', name: name, location: location().start, }; }
+
+FunctionDeclaration = functionName:FunctionName Colon { return { type: 'function-definition', name: functionName, location: location().start, }; }
 
 Module
   = module:ModuleDeclaration
     statements:SourceElements? {
     return {
       ...module,
-      imports: statements ? statements.filter(s => s.type === 'import') : []
+      imports: statements ? statements.filter(s => s.type === 'import') : [],
+      types: statements ? statements.filter(s => s.type === 'custom-type' || s.type === 'type-alias') : [],
+      functions: statements ? statements.filter(s => s.type === 'function-definition') : [],
     };
   }
 

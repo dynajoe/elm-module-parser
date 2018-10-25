@@ -310,4 +310,25 @@ export const ExpectedModule: Module = {
          ],
       },
    ],
+   functions: [
+      {
+         name: 'shuffleList',
+         type: 'function-definition',
+         location: {
+            line: 26,
+            offset: 585,
+            column: 1,
+         },
+      },
+      {
+         name: 'main',
+         type: 'function-definition',
+         location: {
+            offset: 902,
+            line: 37,
+            column: 1,
+         },
+      },
+   ],
+   types: [],
 }

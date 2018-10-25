@@ -18,6 +18,13 @@ export type ExposedAll = { type: 'all' }
 
 export type Exposed = ExposedAll | ExposedFunction | ExposedType | ExposedConstructor
 
+export type FunctionDeclaration = { type: 'function-definition'; name: string; location: Location }
+
+export type TypeAliasDeclaration = { type: 'type-alias'; name: string; location: Location }
+
+export type CustomTypeDeclaration = { type: 'type-alias'; name: string; location: Location }
+
+export type TypeDeclaration = TypeAliasDeclaration | CustomTypeDeclaration
 export interface ImportStatement {
    type: 'import'
    module: string
@@ -31,6 +38,8 @@ export interface Module {
    name: string
    exposing: Exposed[]
    imports: ImportStatement[]
+   functions: FunctionDeclaration[]
+   types: TypeDeclaration[]
    location: Location
 }
 
