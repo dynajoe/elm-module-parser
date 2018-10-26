@@ -195,13 +195,13 @@ TypeList "type-list"
   = head:Constructor t:(ConstructorDelimeter __ c:Constructor { return c; })* { return [head].concat(t); }
 
 TypeAlias "type alias"
-  = LineTerminator* TypeAliasToken __ name:ModuleName Equals { return { type: 'type-alias', name: name, location: location().start, }; }
+  = LineTerminator* start:( TypeAliasToken { return location().start; } ) __ name:ModuleName Equals { return { type: 'type-alias', name: name, location: start, }; }
 
 CustomType "custom type declaration"
-  = LineTerminator* TypeToken __ name:ModuleName Equals constructors:TypeList EOS { return { constructors: constructors, type: 'custom-type', name: name, location: location().start, }; }
+    = LineTerminator* start:( TypeToken { return location().start; } ) __ name:ModuleName Equals constructors:TypeList EOS { return { constructors: constructors, type: 'custom-type', name: name, location: start, }; }
 
 FunctionDeclaration "function annotation"
-  = LineTerminator* functionName:FunctionName __ Colon { return { type: 'function-definition', name: functionName, location: location().start, }; }
+  = LineTerminator* fn:( functionName:FunctionName { return  { name: functionName, start: location().start }; } ) __ Colon { return { type: 'function-definition', name: fn.name, location: fn.start, }; }
 
 Module
   = module:ModuleDeclaration

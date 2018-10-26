@@ -343,8 +343,8 @@ export const ExpectedModule: Module = {
          type: 'custom-type',
          name: 'Msg',
          location: {
-            offset: 1136,
-            line: 44,
+            offset: 1138,
+            line: 46,
             column: 1,
          },
       },
@@ -352,8 +352,8 @@ export const ExpectedModule: Module = {
          type: 'type-alias',
          name: 'Model',
          location: {
-            offset: 1789,
-            line: 74,
+            offset: 1790,
+            line: 75,
             column: 1,
          },
       },
@@ -372,8 +372,8 @@ export const ExpectedModule: Module = {
          type: 'function-definition',
          name: 'main',
          location: {
-            offset: 897,
-            line: 32,
+            offset: 899,
+            line: 34,
             column: 1,
          },
       },
