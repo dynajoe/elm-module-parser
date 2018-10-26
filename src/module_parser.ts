@@ -8,6 +8,10 @@ export interface Location {
    column: number
 }
 
+export interface Locatable {
+   location: Location
+}
+
 export type ExposedFunction = { type: 'function'; name: string }
 
 export type ExposedType = { type: 'type'; name: string }
@@ -18,11 +22,17 @@ export type ExposedAll = { type: 'all' }
 
 export type Exposed = ExposedAll | ExposedFunction | ExposedType | ExposedConstructor
 
-export type FunctionDeclaration = { type: 'function-definition'; name: string; location: Location }
+export type FunctionDeclaration = { type: 'function-definition'; name: string } & Locatable
 
-export type TypeAliasDeclaration = { type: 'type-alias'; name: string; location: Location }
+export type TypeAliasDeclaration = { type: 'type-alias'; name: string } & Locatable
 
-export type CustomTypeDeclaration = { type: 'custom-type'; name: string; location: Location }
+export type CustomTypeDeclaration = {
+   type: 'custom-type'
+   constructors: ConstructorDeclaration[]
+   name: string
+} & Locatable
+
+export type ConstructorDeclaration = { type: 'constructor'; name: string } & Locatable
 
 export type TypeDeclaration = TypeAliasDeclaration | CustomTypeDeclaration
 export interface ImportStatement {
@@ -46,5 +56,6 @@ export interface Module {
 export const ModuleParser = loadParser<Module>('elm_module_parser')
 
 function loadParser<T>(path: string): Parser<T> {
-   return require(`../parsers/${path}`).parse
+   const parse = require(`../parsers/${path}`).parse
+   return (input: string, args: any) => parse(`${input}\n`, args)
 }

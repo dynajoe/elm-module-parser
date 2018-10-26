@@ -1,6 +1,8 @@
 import { Module } from '../../src/module_parser'
 
-export const MODULE_DECLARATION = `module Modules.Foo.Bar exposing (Constructor(..), SomeType, someFn, Msg(..), Step(..))`
+export const MODULE_DECLARATION = `
+module Modules.Foo.Bar exposing (Constructor(..), SomeType, someFn, Msg(..), Step(..))
+`.trim()
 
 export const IMPORT_LIST = `
 import Basics exposing (..)
@@ -24,7 +26,7 @@ import Html.Events exposing (onClick, A, c, E(AS))
 import Foo.Bar as Baz exposing (B, C(..), D, E(..))
 import Plink exposing (..)
 import Kluck exposing (Chicken(..))
-`
+`.trim()
 
 export const REST_OF_MODULE = `
 shuffleList : List a -> Random.Generator (List a)
@@ -84,7 +86,7 @@ type alias Model =
     , bbbb : B
     , cDEfG : C
     }
-`
+`.trim()
 
 export const ExpectedModule: Module = {
    location: {
@@ -119,8 +121,8 @@ export const ExpectedModule: Module = {
    imports: [
       {
          location: {
-            offset: 88,
-            line: 3,
+            offset: 87,
+            line: 2,
             column: 1,
          },
          type: 'import',
@@ -134,8 +136,8 @@ export const ExpectedModule: Module = {
       },
       {
          location: {
-            offset: 116,
-            line: 4,
+            offset: 115,
+            line: 3,
             column: 1,
          },
          type: 'import',
@@ -154,8 +156,8 @@ export const ExpectedModule: Module = {
       },
       {
          location: {
-            offset: 152,
-            line: 5,
+            offset: 151,
+            line: 4,
             column: 1,
          },
          type: 'import',
@@ -170,8 +172,8 @@ export const ExpectedModule: Module = {
       },
       {
          location: {
-            offset: 188,
-            line: 6,
+            offset: 187,
+            line: 5,
             column: 1,
          },
          type: 'import',
@@ -186,8 +188,8 @@ export const ExpectedModule: Module = {
       },
       {
          location: {
-            offset: 293,
-            line: 12,
+            offset: 292,
+            line: 11,
             column: 1,
          },
          type: 'import',
@@ -197,8 +199,8 @@ export const ExpectedModule: Module = {
       },
       {
          location: {
-            offset: 337,
-            line: 14,
+            offset: 336,
+            line: 13,
             column: 1,
          },
          type: 'import',
@@ -208,8 +210,8 @@ export const ExpectedModule: Module = {
       },
       {
          location: {
-            offset: 350,
-            line: 15,
+            offset: 349,
+            line: 14,
             column: 1,
          },
          type: 'import',
@@ -219,8 +221,8 @@ export const ExpectedModule: Module = {
       },
       {
          location: {
-            offset: 366,
-            line: 17,
+            offset: 365,
+            line: 16,
             column: 1,
          },
          type: 'import',
@@ -247,8 +249,8 @@ export const ExpectedModule: Module = {
       },
       {
          location: {
-            offset: 417,
-            line: 20,
+            offset: 416,
+            line: 19,
             column: 1,
          },
          type: 'import',
@@ -258,8 +260,8 @@ export const ExpectedModule: Module = {
       },
       {
          location: {
-            offset: 468,
-            line: 21,
+            offset: 467,
+            line: 20,
             column: 1,
          },
          type: 'import',
@@ -286,8 +288,8 @@ export const ExpectedModule: Module = {
       },
       {
          location: {
-            offset: 520,
-            line: 22,
+            offset: 519,
+            line: 21,
             column: 1,
          },
          type: 'import',
@@ -301,8 +303,8 @@ export const ExpectedModule: Module = {
       },
       {
          location: {
-            offset: 547,
-            line: 23,
+            offset: 546,
+            line: 22,
             column: 1,
          },
          type: 'import',
@@ -316,33 +318,33 @@ export const ExpectedModule: Module = {
          ],
       },
    ],
-   functions: [
-      {
-         name: 'shuffleList',
-         type: 'function-definition',
-         location: {
-            line: 26,
-            offset: 585,
-            column: 1,
-         },
-      },
-      {
-         name: 'main',
-         type: 'function-definition',
-         location: {
-            offset: 902,
-            line: 37,
-            column: 1,
-         },
-      },
-   ],
    types: [
       {
+         constructors: [
+            {
+               type: 'constructor',
+               name: 'Shuffle',
+               location: {
+                  offset: 1153,
+                  line: 47,
+                  column: 7,
+               },
+            },
+            {
+               type: 'constructor',
+               name: 'Update',
+               location: {
+                  offset: 1167,
+                  line: 48,
+                  column: 7,
+               },
+            },
+         ],
          type: 'custom-type',
          name: 'Msg',
          location: {
-            offset: 1141,
-            line: 49,
+            offset: 1136,
+            line: 44,
             column: 1,
          },
       },
@@ -350,8 +352,28 @@ export const ExpectedModule: Module = {
          type: 'type-alias',
          name: 'Model',
          location: {
-            offset: 1793,
-            line: 78,
+            offset: 1789,
+            line: 74,
+            column: 1,
+         },
+      },
+   ],
+   functions: [
+      {
+         type: 'function-definition',
+         name: 'shuffleList',
+         location: {
+            offset: 582,
+            line: 23,
+            column: 1,
+         },
+      },
+      {
+         type: 'function-definition',
+         name: 'main',
+         location: {
+            offset: 897,
+            line: 32,
             column: 1,
          },
       },

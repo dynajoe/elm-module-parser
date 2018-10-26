@@ -16,11 +16,27 @@ Start
   = __ module:Module __
     EOF { return module; }
 
-__ "ignored"
-  = (Ws / Comment)*
+Ws "whitespace"
+  = "\t"
+  / "\v"
+  / "\f"
+  / " "
+  / "\u00A0"
+  / "\uFEFF"
 
-Ws
-  = [ \r\n\t]
+LineTerminator
+  = [\n\r\u2028\u2029]
+
+LineTerminatorSequence "end of line"
+  = "\n"
+  / "\r\n"
+  / "\r"
+  / "\u2028"
+  / "\u2029"
+
+__ = (Ws / LineTerminatorSequence / Comment)*
+
+_ = (Ws / MultiLineCommentNoLineTerminator)*
 
 LParen = __ "(" __
 
@@ -39,47 +55,66 @@ Colon
 Comma
   = __ "," __
 
+Pipe
+  = __ "|" __
+
+IdentifierPart
+  = [a-z_]i
+
+OperatorPart
+  = $ [:+-]+
+
 ExposingAllToken
   = ".."
 
 AsToken
-  = "as" Ws __
+  = "as" !IdentifierPart
 
 PortToken
-  = "port" Ws __
+  = "port" !IdentifierPart
 
 ModuleToken
-  = "module" Ws __
+  = "module" !IdentifierPart
 
 ExposingToken
-  = "exposing" Ws __
+  = "exposing" !IdentifierPart
 
 ImportToken
-  = "import" Ws __
+  = "import" !IdentifierPart
 
 TypeAliasToken
-  = "type alias" Ws __
+  = "type alias" !IdentifierPart
 
 TypeToken
-  = "type" Ws __
+  = "type" !IdentifierPart
 
-SingleLineComment
+MultiLineCommentNoLineTerminator
+  = "{-" (!("{-" / LineTerminator) .)* "-}"
+
+// Automatic Semicolon Insertion
+
+EOS
+  = _ SingleLineComment? LineTerminatorSequence
+  / _ &")"
+  / __ EOF
+
+SingleLineComment "comment"
   = "--" [^\n]* Ws*
 
-MultiLineComment
+MultiLineComment "comment"
   = "{-" (!"-}" ( MultiLineComment / . ))* "-}" Ws*
 
 Comment
   = SingleLineComment
   / MultiLineComment
 
-ModuleAlias = AsToken moduleName:ModuleName { return moduleName; }
+ModuleAlias = AsToken __ moduleName:ModuleName { return moduleName; }
 
 ModuleDeclaration "module declaration"
-  = port:PortToken?
-    ModuleToken
-    moduleName:ModulePath __
-    exposing:ModuleExports? {
+  = port:(PortToken _)?
+    ModuleToken _
+    moduleName:ModulePath
+    exposing:(__ e:ModuleExports { return e; } )? __ {
       return {
         location: location().start,
         type: port ? 'port-module' : 'module',
@@ -89,10 +124,10 @@ ModuleDeclaration "module declaration"
    }
 
 ImportStatement "import statement"
-  = ImportToken
-    moduleName:ModulePath __
-    alias:ModuleAlias? __
-    exposing:ModuleExports? {
+  = ImportToken _
+    moduleName:ModulePath
+    alias:(__ a:ModuleAlias { return a; })?
+    exposing:(__ e:ModuleExports { return e; })? __ {
       return {
         location: location().start,
         type: 'import',
@@ -113,12 +148,12 @@ ConstructorExport
 ExportedModule
   = ExposingAllToken { return { type: 'all' }; }
   / fn:FunctionName { return { type: 'function', name: fn }; }
-  / ctor:ConstructorExport  { return ctor; }
+  / ctor:ConstructorExport { return ctor; }
   / module:ModuleName { return { type: 'type', name: module }; }
 
 ExposingList =
   head:ExportedModule
-  tail:(Comma t:ExportedModule)* { return buildList(head, tail, 1); }
+  tail:(Comma ExportedModule)* { return buildList(head, tail, 1); }
 
 ModuleExports
   = ExposingToken
@@ -126,15 +161,15 @@ ModuleExports
       return exposing;
     }
 
-FunctionName
-  = ([a-z][a-z0-9]i*)+ { return text().trim(); }
-  / LParen [:+-]+ RParen { return text().trim(); }
+FunctionName "function-name"
+  = [a-z] IdentifierPart* { return text(); }
+  / LParen name:OperatorPart RParen { return "(" + name + ")"; }
 
 ModulePath
-  = head:ModuleName tail:("." ModuleName)* { return text().trim(); }
+  = head:ModuleName tail:("." ModuleName)* { return text(); }
 
 ModuleName
-  = ([A-Z][a-z0-9]i*)+ Ws* { return text().trim(); }
+  = [A-Z] IdentifierPart* { return text(); }
 
 Statement
   = ImportStatement
@@ -142,13 +177,31 @@ Statement
   / CustomType
   / FunctionDeclaration
 
+TopLevelStatementStart
+  = LineTerminator (
+      TypeToken
+    / TypeAliasToken
+    / ModuleToken
+    / ImportToken
+    / FunctionName
+  )
+
+ConstructorDelimeter = "|"
+
+Constructor "union-type"
+  = name:ModuleName (!TopLevelStatementStart !ConstructorDelimeter .)* { return { type: 'constructor', name: name, location: location().start, }; }
+
+TypeList "type-list"
+  = head:Constructor t:(ConstructorDelimeter __ c:Constructor { return c; })* { return [head].concat(t); }
+
 TypeAlias "type alias"
-  = TypeAliasToken name:ModuleName Equals { return { type: 'type-alias', name: name, location: location().start, }; }
+  = LineTerminator* TypeAliasToken __ name:ModuleName Equals { return { type: 'type-alias', name: name, location: location().start, }; }
 
 CustomType "custom type declaration"
-  = TypeToken name:ModuleName Equals { return { type: 'custom-type', name: name, location: location().start, }; }
+  = LineTerminator* TypeToken __ name:ModuleName Equals constructors:TypeList EOS { return { constructors: constructors, type: 'custom-type', name: name, location: location().start, }; }
 
-FunctionDeclaration = functionName:FunctionName Colon { return { type: 'function-definition', name: functionName, location: location().start, }; }
+FunctionDeclaration "function annotation"
+  = LineTerminator* functionName:FunctionName __ Colon { return { type: 'function-definition', name: functionName, location: location().start, }; }
 
 Module
   = module:ModuleDeclaration
@@ -170,8 +223,8 @@ EOF
   = !.
 
 AnyLine "skipped"
-  = [^\n]*[\n]
+  =  [^\n]* '\n'
 
 SourceElement
   = Statement
-  / AnyLine { return null; }
+  / AnyLine
