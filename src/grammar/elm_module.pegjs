@@ -159,7 +159,7 @@ FunctionName "function-name"
   / "(" _ name:OperatorPart _ ")" { return "(" + name + ")"; }
 
 ImportStatement "import statement"
-  = __ (ImportToken _
+  = __ i:(ImportToken _
     moduleName:ModulePath
     alias:(__ a:ModuleAlias { return a; })?
     exposing:(__ e:ModuleExports { return e; })? {
@@ -171,7 +171,7 @@ ImportStatement "import statement"
         exposing: exposing === 'all' || exposing == null ? [] : exposing,
         exposes_all: exposing === 'all',
       };
-    })
+    }) __ { return i; }
 
 TopLevelStatementStart
   = LineTerminator (
@@ -183,16 +183,16 @@ TopLevelStatementStart
     / PortToken
   )
 
-CustomTypeVariant "custom type variant"
+CustomTypeConstructor "custom type constructor"
   = name:(n:ModuleName { return { location: location(), name: n }; }) (!TopLevelStatementStart !"|" .)* {
     return {
       ...name,
-      type: 'custom-type-variant',
+      type: 'constructor',
     };
   }
 
-VariantList "custom type variants"
-  = head:CustomTypeVariant t:("|" __ c:CustomTypeVariant { return c; })* { return [head].concat(t); }
+ConstructorList "custom type constructors"
+  = head:CustomTypeConstructor t:("|" __ c:CustomTypeConstructor { return c; })* { return [head].concat(t); }
 
 TypeAlias "type alias"
   = LineTerminator* TypeAliasToken __ name:(n:ModuleName { return { location: location(), name: n }; }) __ Equals {
@@ -208,10 +208,10 @@ TypeParameterList
   }
 
 CustomType "custom type declaration"
-    = LineTerminator* TypeToken __ name:(n:ModuleName { return { location: location(), name: n }; }) __ TypeParameterList? __ Equals __ variants:VariantList EOS {
+    = LineTerminator* TypeToken __ name:(n:ModuleName { return { location: location(), name: n }; }) __ TypeParameterList? __ Equals __ constructors:ConstructorList EOS {
       return {
         ...name,
-        variants: variants,
+        constructors: constructors,
         type: 'custom-type',
       };
     }
@@ -225,7 +225,7 @@ PortDeclaration "port declaration"
   }
 
 FunctionParams
-  = head:Identifier tail:(_ name:Identifier)* {
+  = head:(Identifier / '_') tail:(_ name:(Identifier / '_') { return name; })* {
     return [head].concat(tail);
   }
 
@@ -238,11 +238,11 @@ FunctionAnnotation "function annotation"
   }
 
 FunctionDeclaration "function declaration"
-  = LineTerminator* name:(n:FunctionName { return { name: n, location: location(), }; }) __ params:FunctionParams __ Equals {
+  = LineTerminator* name:(n:FunctionName { return { name: n, location: location(), }; }) __ params:FunctionParams? __ Equals {
     return {
       ...name,
       type: 'function-declaration',
-      params: params,
+      parameters: params ? params : [],
     };
   }
 

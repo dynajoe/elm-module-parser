@@ -27,7 +27,7 @@ export type ExposedConstructor = { type: 'constructor'; name: string; exposes_al
 
 export type Exposed = ExposedFunction | ExposedType | ExposedConstructor
 
-export type FunctionDeclaration = { type: 'function-declaration'; name: string } & Locatable
+export type FunctionDeclaration = { type: 'function-declaration'; name: string; parameters: string[] } & Locatable
 
 export type FunctionAnnotation = { type: 'function-annotation'; name: string } & Locatable
 

@@ -64,7 +64,7 @@ update msg model =
             ( { model | values = list }, Cmd.none )
 
 
-view model =
+view model foo bar =
     div []
         [ button [ onClick Shuffle ] [ text "Shuffle" ]
         , Html.Keyed.node "div" [] <|
@@ -84,4 +84,9 @@ type alias Model =
     , bbbb : B
     , cDEfG : C
     }
+type Foo
+    = Bar
+    | Baz (List Int)
+
+
 `.trim()
