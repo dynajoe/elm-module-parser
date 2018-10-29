@@ -24,19 +24,26 @@ describe('Module Parser', () => {
    it('should parse a module along with its imports', () => {
       const result = runParser(`${S.MODULE_DECLARATION}\n${S.IMPORT_LIST}`)
 
-      expect(result.imports.map(x => x.module)).to.deep.equal([
-         'Basics',
-         'List',
-         'Maybe',
-         'Result',
-         'String',
-         'Tuple',
-         'Browser',
-         'Html',
-         'Html.Events',
-         'Foo.Bar',
-         'Plink',
-         'Kluck',
+      expect(
+         result.imports.map(x => ({
+            module: x.module,
+            alias: x.alias,
+            exposes_all: x.exposes_all,
+            exposing: x.exposing.map(e => e.name),
+         }))
+      ).to.deep.equal([
+         { module: 'Basics', alias: null, exposes_all: true, exposing: [] },
+         { module: 'List', alias: null, exposes_all: false, exposing: ['(::)'] },
+         { module: 'Maybe', alias: null, exposes_all: false, exposing: ['Maybe'] },
+         { module: 'Result', alias: null, exposes_all: false, exposing: ['Result'] },
+         { module: 'String', alias: null, exposes_all: false, exposing: [] },
+         { module: 'Tuple', alias: null, exposes_all: false, exposing: [] },
+         { module: 'Browser', alias: null, exposes_all: false, exposing: [] },
+         { module: 'Html', alias: null, exposes_all: false, exposing: ['Html', 'button', 'div', 'text'] },
+         { module: 'Html.Events', alias: null, exposes_all: false, exposing: ['onClick', 'A', 'c', 'E'] },
+         { module: 'Foo.Bar', alias: 'Baz', exposes_all: false, exposing: ['B', 'C', 'D', 'E'] },
+         { module: 'Plink', alias: null, exposes_all: true, exposing: [] },
+         { module: 'Kluck', alias: null, exposes_all: false, exposing: ['Chicken'] },
       ])
    })
    describe('full module', () => {

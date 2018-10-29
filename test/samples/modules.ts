@@ -4,7 +4,7 @@ module Modules.Foo.Bar exposing (Constructor(..), SomeType, someFn, Msg(..), Ste
 
 export const IMPORT_LIST = `
 import Basics exposing (..)
-import List exposing ( List, (::) )
+import List exposing ((::))
 import Maybe exposing ( Maybe(..) )
 import Result exposing ( Result(..) )
 -- this is a test
@@ -20,7 +20,7 @@ import Browser
 import Html exposing (Html,
  button, div, text
   )
-import Html.Events exposing (onClick, A, c, E(AS))
+import Html.Events exposing (onClick, A, c, E(AS,DEF))
 import Foo.Bar as Baz exposing (B, C(..), D, E(..))
 import Plink exposing (..)
 import Kluck exposing (Chicken(..))

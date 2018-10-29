@@ -102,11 +102,19 @@ Comment "comment"
 ModulePath
   = head:ModuleName tail:("." ModuleName)* { return text(); }
 
+ModuleNameList =
+  head:ModuleName
+  tail:(Comma m:ModuleName { return m; })* {
+    return [head].concat(tail);
+  }
+
 ConstructorExport
-  = name:(n:ModuleName { return { name: n, location: location(), }; }) LParen ExposingAllToken RParen {
+  = name:(n:ModuleName { return { name: n, location: location(), }; }) LParen exposing:(ExposingAllToken { return 'all'; } / ModuleNameList) RParen {
       return {
         ...name,
         type: 'constructor',
+        exposing: exposing === 'all' || exposing == null ? [] : exposing,
+        exposes_all: exposing === 'all',
       };
     }
 
@@ -123,7 +131,7 @@ ExposingList =
 
 ModuleExports
   = ExposingToken __
-    "(" __ exposing:(ExposingAllToken / ExposingList) __ ")" {
+    "(" __ exposing:(ExposingAllToken { return 'all'; } / ExposingList) __ ")" {
       return exposing;
     }
 
@@ -153,7 +161,7 @@ ModuleAlias "module alias"
 
 FunctionName "function-name"
   = Identifier { return text(); }
-  / "(" _ name:OperatorPart _ ")" { return "(" + name + ")"; }
+  / "(" _ name:Operator _ ")" { return "(" + name + ")"; }
 
 ImportStatement "import statement"
   = __ i:(ImportToken _
