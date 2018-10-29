@@ -3,9 +3,16 @@ export type Parser<T> = {
 }
 
 export interface Location {
-   offset: number
-   line: number
-   column: number
+   start: {
+      offset: number
+      line: number
+      column: number
+   }
+   end: {
+      offset: number
+      line: number
+      column: number
+   }
 }
 
 export interface Locatable {
@@ -16,15 +23,17 @@ export type ExposedFunction = { type: 'function'; name: string }
 
 export type ExposedType = { type: 'type'; name: string }
 
-export type ExposedConstructor = { type: 'constructor'; name: string }
+export type ExposedConstructor = { type: 'constructor'; name: string; exposes_all: boolean }
 
-export type ExposedAll = { type: 'all' }
+export type Exposed = ExposedFunction | ExposedType | ExposedConstructor
 
-export type Exposed = ExposedAll | ExposedFunction | ExposedType | ExposedConstructor
+export type FunctionDeclaration = { type: 'function-declaration'; name: string } & Locatable
 
-export type FunctionDeclaration = { type: 'function-definition'; name: string } & Locatable
+export type FunctionAnnotation = { type: 'function-annotation'; name: string } & Locatable
 
 export type TypeAliasDeclaration = { type: 'type-alias'; name: string } & Locatable
+
+export type ConstructorDeclaration = { type: 'constructor'; name: string } & Locatable
 
 export type CustomTypeDeclaration = {
    type: 'custom-type'
@@ -32,24 +41,25 @@ export type CustomTypeDeclaration = {
    name: string
 } & Locatable
 
-export type ConstructorDeclaration = { type: 'constructor'; name: string } & Locatable
-
 export type TypeDeclaration = TypeAliasDeclaration | CustomTypeDeclaration
-export interface ImportStatement {
+
+export interface ImportStatement extends Locatable {
    type: 'import'
    module: string
    alias: string
    exposing: Exposed[]
-   location: Location
 }
 
 export interface Module {
    type: 'module' | 'port-module'
    name: string
+   text: string
+   exposes_all: boolean
    exposing: Exposed[]
    imports: ImportStatement[]
-   functions: FunctionDeclaration[]
    types: TypeDeclaration[]
+   function_declarations: FunctionDeclaration[]
+   function_annotations: FunctionAnnotation[]
    location: Location
 }
 
