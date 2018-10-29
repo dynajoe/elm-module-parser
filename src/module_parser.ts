@@ -68,5 +68,7 @@ export const ModuleParser = loadParser<Module>('elm_module_parser')
 
 function loadParser<T>(path: string): Parser<T> {
    const parse = require(`../parsers/${path}`).parse
-   return (input: string, args: any) => parse(`${input}\n`, args)
+   return (input: string, args: any) => {
+      return { ...parse(`${input}\n`, args), text: input }
+   }
 }

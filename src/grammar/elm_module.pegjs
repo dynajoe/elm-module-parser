@@ -1,9 +1,6 @@
 Start
   = __ module:Module __ EOF {
-    return {
-      ...module,
-      text: text(),
-    };
+    return module;
   }
 
 Ws "ws"
