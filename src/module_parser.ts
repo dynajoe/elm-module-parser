@@ -19,11 +19,11 @@ export interface Locatable {
    location: Location
 }
 
-export type ExposedFunction = { type: 'function'; name: string }
+export type ExposedFunction = { type: 'function'; name: string } & Locatable
 
-export type ExposedType = { type: 'type'; name: string }
+export type ExposedType = { type: 'type'; name: string } & Locatable
 
-export type ExposedConstructor = { type: 'constructor'; name: string; exposes_all: boolean }
+export type ExposedConstructor = { type: 'constructor'; name: string } & Locatable
 
 export type Exposed = ExposedFunction | ExposedType | ExposedConstructor
 
@@ -47,6 +47,7 @@ export interface ImportStatement extends Locatable {
    type: 'import'
    module: string
    alias: string
+   exposes_all: boolean
    exposing: Exposed[]
 }
 
