@@ -1,4 +1,11 @@
-import { TypeDeclaration, FunctionAnnotation, Module, FunctionDeclaration, ImportStatement } from './module_parser'
+import {
+   TypeDeclaration,
+   FunctionAnnotation,
+   Module,
+   Location,
+   FunctionDeclaration,
+   ImportStatement,
+} from './module_parser'
 import { keyBy } from './util'
 
 export namespace Views {
@@ -7,7 +14,12 @@ export namespace Views {
       perspective: string
       name: string
       types: TypeDeclaration[]
-      functions: { name: string; declaration: FunctionDeclaration; annotation: FunctionAnnotation }[]
+      functions: {
+         name: string
+         location: Location
+         declaration: FunctionDeclaration
+         annotation: FunctionAnnotation
+      }[]
    }
 
    export function importedView(this_module: Module, other_module: Module): ModuleView | null {
@@ -62,6 +74,7 @@ export namespace Views {
             name: n,
             annotation: annotations_by_name[n] || null,
             declaration: declarations_by_name[n] || null,
+            location: (annotations_by_name[n] || declarations_by_name[n]).location,
          }
       })
 
