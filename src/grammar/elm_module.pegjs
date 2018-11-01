@@ -235,7 +235,7 @@ FunctionParams
   }
 
 FunctionAnnotation "function annotation"
-  = LineTerminator* name:(n:FunctionName { return { name: n, location: location(), }; }) __ Colon {
+  = LineTerminator* name:(n:FunctionName { return { name: n, location: location(), }; }) __ ":" {
     return {
       ...name,
       type: 'function-annotation',
@@ -243,7 +243,7 @@ FunctionAnnotation "function annotation"
   }
 
 FunctionDeclaration "function declaration"
-  = LineTerminator* name:(n:FunctionName { return { name: n, location: location(), }; }) __ params:FunctionParams? __ Equals {
+  = LineTerminator* name:(n:FunctionName { return { name: n, location: location(), }; }) __ params:FunctionParams? __ "=" {
     return {
       ...name,
       type: 'function-declaration',

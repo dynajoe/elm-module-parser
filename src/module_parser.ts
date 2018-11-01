@@ -1,74 +1,42 @@
-export type Parser<T> = {
-   (input: string, options?: any): T
-}
+import * as T from './types'
+import { loadParser } from './util'
 
-export interface Location {
-   start: {
-      offset: number
-      line: number
-      column: number
-   }
-   end: {
-      offset: number
-      line: number
-      column: number
-   }
-}
+const elmModuleParser = loadParser<T.Module>('elm_module_parser')
 
-export interface Locatable {
-   location: Location
-}
+const ElmDefaultImports: T.ModuleImport[] = elmModuleParser(`
+module Default
 
-export type ExposedFunction = { type: 'function'; name: string } & Locatable
+import Basics exposing (..)
+import List exposing (List, (::))
+import Maybe exposing (Maybe(..))
+import Result exposing (Result(..))
+import String exposing (String)
+import Char exposing (Char)
+import Tuple
+import Debug
+import Platform exposing ( Program )
+import Platform.Cmd as Cmd exposing ( Cmd )
+import Platform.Sub as Sub exposing ( Sub )
+`).imports.map(
+   (a): T.ModuleImport => ({
+      type: 'default-import',
+      module: a.module,
+      location: null,
+      alias: null,
+      exposes_all: a.exposes_all,
+      exposing: a.exposing.map(e => ({
+         type: e.type,
+         name: e.name,
+         location: null,
+      })),
+   })
+)
 
-export type ExposedType = { type: 'type'; name: string } & Locatable
+export const parseElmModule = (input: string): T.Module => {
+   const parsed_module = elmModuleParser(`${input}\n`)
 
-export type ExposedConstructor = { type: 'constructor'; name: string } & Locatable
-
-export type Exposed = ExposedFunction | ExposedType | ExposedConstructor
-
-export type FunctionDeclaration = { type: 'function-declaration'; name: string; parameters: string[] } & Locatable
-
-export type FunctionAnnotation = { type: 'function-annotation'; name: string } & Locatable
-
-export type TypeAliasDeclaration = { type: 'type-alias'; name: string } & Locatable
-
-export type ConstructorDeclaration = { type: 'constructor'; name: string } & Locatable
-
-export type CustomTypeDeclaration = {
-   type: 'custom-type'
-   constructors: ConstructorDeclaration[]
-   name: string
-} & Locatable
-
-export type TypeDeclaration = TypeAliasDeclaration | CustomTypeDeclaration
-
-export interface ImportStatement extends Locatable {
-   type: 'import'
-   module: string
-   alias: string
-   exposes_all: boolean
-   exposing: Exposed[]
-}
-
-export interface Module {
-   type: 'module' | 'port-module'
-   name: string
-   text: string
-   exposes_all: boolean
-   exposing: Exposed[]
-   imports: ImportStatement[]
-   types: TypeDeclaration[]
-   function_declarations: FunctionDeclaration[]
-   function_annotations: FunctionAnnotation[]
-   location: Location
-}
-
-export const parseElmModule = loadParser<Module>('elm_module_parser')
-
-function loadParser<T>(path: string): Parser<T> {
-   const parse = require(`../parsers/${path}`).parse
-   return (input: string, args: any) => {
-      return { ...parse(`${input}\n`, args), text: input }
+   return {
+      ...parsed_module,
+      imports: parsed_module.imports.concat(ElmDefaultImports),
    }
 }

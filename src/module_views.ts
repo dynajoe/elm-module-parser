@@ -1,27 +1,7 @@
-import {
-   FunctionAnnotation,
-   Module,
-   Location,
-   FunctionDeclaration,
-   TypeAliasDeclaration,
-   CustomTypeDeclaration,
-} from './module_parser'
+import * as T from './types'
 import { keyBy } from './util'
 
-export interface ModuleView {
-   type: 'module' | 'port-module'
-   name: string
-   custom_types: CustomTypeDeclaration[]
-   type_aliases: TypeAliasDeclaration[]
-   functions: {
-      name: string
-      location: Location
-      declaration: FunctionDeclaration
-      annotation: FunctionAnnotation
-   }[]
-}
-
-export function exposedOnlyView(module: Module): ModuleView {
+export function exposedOnlyView(module: T.Module): T.ModuleView {
    const exposing_by_name = keyBy(module.exposing, e => e.name)
 
    const exposed_types = module.exposes_all
@@ -56,8 +36,8 @@ export function exposedOnlyView(module: Module): ModuleView {
    return {
       type: module.type,
       name: module.name,
-      custom_types: <CustomTypeDeclaration[]>exposed_types.filter(x => x.type === 'custom-type'),
-      type_aliases: <TypeAliasDeclaration[]>exposed_types.filter(x => x.type === 'type-alias'),
+      custom_types: <T.CustomTypeDeclaration[]>exposed_types.filter(x => x.type === 'custom-type'),
+      type_aliases: <T.TypeAliasDeclaration[]>exposed_types.filter(x => x.type === 'type-alias'),
       functions: functions,
    }
 }

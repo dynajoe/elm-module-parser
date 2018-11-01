@@ -1,10 +1,10 @@
-import { exposedOnlyView, ModuleView } from '../src/module_views'
-import { Module, TypeAliasDeclaration, CustomTypeDeclaration } from '../src/module_parser'
+import * as T from '../src/types'
 import { expect } from 'chai'
+import { exposedOnlyView } from '../src/module_views'
 
 describe('exposedOnlyView', () => {
    it('should provide only exposed members', () => {
-      const this_module: Module = {
+      const this_module: T.Module = {
          name: 'B',
          types: [
             {
@@ -70,11 +70,11 @@ describe('exposedOnlyView', () => {
 
       const view = exposedOnlyView(this_module)
 
-      const expected: ModuleView = {
+      const expected: T.ModuleView = {
          name: this_module.name,
          type: this_module.type,
-         custom_types: <CustomTypeDeclaration[]>this_module.types.filter(x => x.type === 'custom-type'),
-         type_aliases: <TypeAliasDeclaration[]>this_module.types.filter(x => x.type === 'type-alias'),
+         custom_types: <T.CustomTypeDeclaration[]>this_module.types.filter(x => x.type === 'custom-type'),
+         type_aliases: <T.TypeAliasDeclaration[]>this_module.types.filter(x => x.type === 'type-alias'),
          functions: [
             {
                name: this_module.function_declarations[0].name,

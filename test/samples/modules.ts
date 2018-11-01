@@ -87,6 +87,33 @@ type alias Model =
 type Foo
     = Bar
     | Baz (List Int)
-
-
 `.trim()
+
+export const FUNCTION_WITH_LET = `
+optionalDecoder : Decoder Decode.Value -> Decoder a -> a -> Decoder a
+optionalDecoder pathDecoder valDecoder fallback =
+    let
+        nullOr decoder =
+            Decode.oneOf [ decoder, Decode.null fallback ]
+
+        handleResult input =
+            case Decode.decodeValue pathDecoder input of
+                Ok rawValue ->
+                    -- The field was present, so now let's try to decode that value.
+                    -- (If it was present but fails to decode, this should and will fail!)
+                    case Decode.decodeValue (nullOr valDecoder) rawValue of
+                        Ok finalResult ->
+                            Decode.succeed finalResult
+
+                        Err finalErr ->
+                            -- TODO is there some way to preserve the structure
+                            -- of the original error instead of using toString here?
+                            Decode.fail (Decode.errorToString finalErr)
+
+                Err _ ->
+                    -- The field was not present, so use the fallback.
+                    Decode.succeed fallback
+    in
+    Decode.value
+        |> Decode.andThen handleResult
+`

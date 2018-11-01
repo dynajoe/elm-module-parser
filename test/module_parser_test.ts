@@ -1,9 +1,10 @@
-import { expect } from 'chai'
-import { parseElmModule, Module, CustomTypeDeclaration } from '../src/index'
+import * as T from '../src/types'
 import * as S from './samples/modules'
+import { expect } from 'chai'
+import { parseElmModule } from '../src/index'
 
 describe('Module Parser', () => {
-   const runParser = (input: string): Module => {
+   const runParser = (input: string): T.Module => {
       try {
          return parseElmModule(input)
       } catch (error) {
@@ -27,7 +28,7 @@ describe('Module Parser', () => {
       expect(
          result.imports.map(x => ({
             module: x.module,
-            alias: x.alias,
+            alias: x.type === 'import' ? x.alias : null,
             exposes_all: x.exposes_all,
             exposing: x.exposing.map(e => e.name),
          }))
@@ -44,12 +45,78 @@ describe('Module Parser', () => {
          { module: 'Foo.Bar', alias: 'Baz', exposes_all: false, exposing: ['B', 'C', 'D', 'E'] },
          { module: 'Plink', alias: null, exposes_all: true, exposing: [] },
          { module: 'Kluck', alias: null, exposes_all: false, exposing: ['Chicken'] },
+         {
+            alias: null,
+            exposes_all: true,
+            exposing: [],
+            module: 'Basics',
+         },
+         {
+            alias: null,
+            exposes_all: false,
+            exposing: ['List', '(::)'],
+            module: 'List',
+         },
+         {
+            alias: null,
+            exposes_all: false,
+            exposing: ['Maybe'],
+            module: 'Maybe',
+         },
+         {
+            alias: null,
+            exposes_all: false,
+            exposing: ['Result'],
+            module: 'Result',
+         },
+         {
+            alias: null,
+            exposes_all: false,
+            exposing: ['String'],
+            module: 'String',
+         },
+         {
+            alias: null,
+            exposes_all: false,
+            exposing: ['Char'],
+            module: 'Char',
+         },
+         {
+            alias: null,
+            exposes_all: false,
+            exposing: [],
+            module: 'Tuple',
+         },
+         {
+            alias: null,
+            exposes_all: false,
+            exposing: [],
+            module: 'Debug',
+         },
+         {
+            alias: null,
+            exposes_all: false,
+            exposing: ['Program'],
+            module: 'Platform',
+         },
+         {
+            alias: null,
+            exposes_all: false,
+            exposing: ['Cmd'],
+            module: 'Platform.Cmd',
+         },
+         {
+            alias: null,
+            exposes_all: false,
+            exposing: ['Sub'],
+            module: 'Platform.Sub',
+         },
       ])
    })
 
    describe('full module', () => {
       const input = `${S.MODULE_DECLARATION}\n${S.IMPORT_LIST}\n${S.REST_OF_MODULE}`
-      let result: Module = null
+      let result: T.Module = null
 
       before(() => {
          result = runParser(input)
@@ -64,7 +131,7 @@ describe('Module Parser', () => {
       })
 
       it('custom type variants', () => {
-         const msgType = result.types.find(x => x.type === 'custom-type' && x.name === 'Msg') as CustomTypeDeclaration
+         const msgType = result.types.find(x => x.type === 'custom-type' && x.name === 'Msg') as T.CustomTypeDeclaration
 
          expect(msgType.constructors.map(x => ({ name: x.name, type: x.type }))).to.deep.equal([
             { name: 'Shuffle', type: 'constructor' },
@@ -79,6 +146,25 @@ describe('Module Parser', () => {
             { name: 'init', parameters: ['_'] },
             { name: 'update', parameters: ['msg', 'model'] },
             { name: 'view', parameters: ['model', 'foo', 'bar'] },
+         ])
+      })
+   })
+
+   describe('function with let expression', () => {
+      const input = `${S.MODULE_DECLARATION}\n${S.IMPORT_LIST}\n${S.FUNCTION_WITH_LET}`
+      let result: T.Module = null
+
+      before(() => {
+         result = runParser(input)
+      })
+
+      it('function annotations', () => {
+         expect(result.function_annotations.map(d => d.name)).to.deep.equal(['optionalDecoder'])
+      })
+
+      it('function declarations', () => {
+         expect(result.function_declarations.map(d => ({ name: d.name, parameters: d.parameters }))).to.deep.equal([
+            { name: 'optionalDecoder', parameters: ['pathDecoder', 'valDecoder', 'fallback'] },
          ])
       })
    })
