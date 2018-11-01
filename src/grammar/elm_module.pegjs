@@ -161,7 +161,7 @@ ModuleAlias "module alias"
 
 FunctionName "function-name"
   = Identifier { return text(); }
-  / "(" _ name:Operator _ ")" { return "(" + name + ")"; }
+  / "(" _ name:Operator _ ")" { return name; }
 
 ImportStatement "import statement"
   = __ i:(ImportToken _

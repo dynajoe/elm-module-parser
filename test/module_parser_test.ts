@@ -34,7 +34,7 @@ describe('Module Parser', () => {
          }))
       ).to.deep.equal([
          { module: 'Basics', alias: null, exposes_all: true, exposing: [] },
-         { module: 'List', alias: null, exposes_all: false, exposing: ['(::)'] },
+         { module: 'List', alias: null, exposes_all: false, exposing: ['::'] },
          { module: 'Maybe', alias: null, exposes_all: false, exposing: ['Maybe'] },
          { module: 'Result', alias: null, exposes_all: false, exposing: ['Result'] },
          { module: 'String', alias: null, exposes_all: false, exposing: [] },
@@ -54,7 +54,7 @@ describe('Module Parser', () => {
          {
             alias: null,
             exposes_all: false,
-            exposing: ['List', '(::)'],
+            exposing: ['List', '::'],
             module: 'List',
          },
          {
