@@ -1,32 +1,10 @@
-import { Views } from '../src/module_views'
-import { Module } from '../src/module_parser'
+import { exposedOnlyView, ModuleView } from '../src/module_views'
+import { Module, TypeAliasDeclaration, CustomTypeDeclaration } from '../src/module_parser'
 import { expect } from 'chai'
 
-describe('importedView', () => {
-   it('should import all exposed from the other module', () => {
+describe('exposedOnlyView', () => {
+   it('should provide only exposed members', () => {
       const this_module: Module = {
-         name: 'A',
-         types: [],
-         text: '',
-         location: null,
-         function_declarations: [],
-         function_annotations: [],
-         exposes_all: false,
-         exposing: [],
-         imports: [
-            {
-               module: 'B',
-               type: 'import',
-               location: null,
-               exposing: [],
-               exposes_all: true,
-               alias: null,
-            },
-         ],
-         type: 'module',
-      }
-
-      const other_module: Module = {
          name: 'B',
          types: [
             {
@@ -90,25 +68,25 @@ describe('importedView', () => {
          type: 'module',
       }
 
-      const view = Views.importedView(this_module, other_module)
+      const view = exposedOnlyView(this_module)
 
-      const expected: Views.ModuleView = {
-         perspective: this_module.name,
-         name: other_module.name,
-         type: other_module.type,
-         types: other_module.types,
+      const expected: ModuleView = {
+         name: this_module.name,
+         type: this_module.type,
+         custom_types: <CustomTypeDeclaration[]>this_module.types.filter(x => x.type === 'custom-type'),
+         type_aliases: <TypeAliasDeclaration[]>this_module.types.filter(x => x.type === 'type-alias'),
          functions: [
             {
-               name: other_module.function_declarations[0].name,
-               declaration: other_module.function_declarations[0],
-               annotation: other_module.function_annotations[0],
-               location: other_module.function_annotations[0].location,
+               name: this_module.function_declarations[0].name,
+               declaration: this_module.function_declarations[0],
+               annotation: this_module.function_annotations[0],
+               location: this_module.function_annotations[0].location,
             },
             {
-               name: other_module.function_declarations[1].name,
-               declaration: other_module.function_declarations[1],
+               name: this_module.function_declarations[1].name,
+               declaration: this_module.function_declarations[1],
                annotation: null,
-               location: other_module.function_declarations[1].location,
+               location: this_module.function_declarations[1].location,
             },
          ],
       }
