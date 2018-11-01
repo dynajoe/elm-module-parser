@@ -64,7 +64,7 @@ export interface Module {
    location: Location
 }
 
-export const ModuleParser = loadParser<Module>('elm_module_parser')
+export const parseElmModule = loadParser<Module>('elm_module_parser')
 
 function loadParser<T>(path: string): Parser<T> {
    const parse = require(`../parsers/${path}`).parse

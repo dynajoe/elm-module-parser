@@ -1,11 +1,11 @@
 import { expect } from 'chai'
-import { ModuleParser, Module, CustomTypeDeclaration } from '../src/index'
+import { parseElmModule, Module, CustomTypeDeclaration } from '../src/index'
 import * as S from './samples/modules'
 
 describe('Module Parser', () => {
    const runParser = (input: string): Module => {
       try {
-         return ModuleParser(input)
+         return parseElmModule(input)
       } catch (error) {
          return error
       }
@@ -46,6 +46,7 @@ describe('Module Parser', () => {
          { module: 'Kluck', alias: null, exposes_all: false, exposing: ['Chicken'] },
       ])
    })
+
    describe('full module', () => {
       const input = `${S.MODULE_DECLARATION}\n${S.IMPORT_LIST}\n${S.REST_OF_MODULE}`
       let result: Module = null
