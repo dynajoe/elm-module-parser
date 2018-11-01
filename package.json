@@ -1,6 +1,6 @@
 {
   "name": "elm-module-parser",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Parses Elm module declaration and import statements.",
   "main": "dist/src/index.js",
   "scripts": {
