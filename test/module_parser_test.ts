@@ -1,5 +1,6 @@
 import * as T from '../src/types'
 import * as S from './samples/modules'
+import * as Elm18 from './samples/elm_18'
 import { expect } from 'chai'
 import { parseElmModule } from '../src/index'
 
@@ -203,6 +204,32 @@ describe('Module Parser', () => {
             { name: 'modifyUrl' },
             { name: 'newUrl' },
             { name: 'onUrlChange' },
+         ])
+      })
+   })
+
+   describe('elm 18', () => {
+      const input = Elm18.MODULE
+
+      let result: T.Module = null
+
+      before(() => {
+         result = runParser(input)
+      })
+
+      it('module name', () => {
+         expect(result.name).to.be.equal('Module')
+      })
+
+      it('ports', () => {
+         expect(result.ports.map(d => ({ name: d.name }))).to.deep.equal([{ name: 'somePort' }])
+      })
+
+      it('infix annotations', () => {
+         expect(result.function_annotations.map(d => ({ name: d.name }))).to.deep.equal([
+            { name: 'function' },
+            { name: '%%' },
+            { name: 'multiLineFunction' },
          ])
       })
    })
