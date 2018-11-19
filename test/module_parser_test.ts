@@ -168,4 +168,24 @@ describe('Module Parser', () => {
          ])
       })
    })
+
+   describe('function with pattern expression', () => {
+      const input = `${S.MODULE_DECLARATION}\n${S.IMPORT_LIST}\n${S.FUNCTION_WITH_PATTERN}`
+      let result: T.Module = null
+
+      before(() => {
+         result = runParser(input)
+      })
+
+      it('function annotations', () => {
+         expect(result.function_annotations.map(d => d.name)).to.deep.equal(['functionWithPattern', 'myTime'])
+      })
+
+      it('function declarations', () => {
+         expect(result.function_declarations.map(d => ({ name: d.name, parameters: d.parameters }))).to.deep.equal([
+            { name: 'functionWithPattern', parameters: ['id', 'bar', 'foo'] },
+            { name: 'myTime', parameters: ['model', 'bar'] },
+         ])
+      })
+   })
 })

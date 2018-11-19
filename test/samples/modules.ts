@@ -117,3 +117,14 @@ optionalDecoder pathDecoder valDecoder fallback =
     Decode.value
         |> Decode.andThen handleResult
 `
+
+export const FUNCTION_WITH_PATTERN = `
+functionWithPattern : TypeName -> { a | foo : Int, bar : String }, (Result Http.Error () -> msg) -> Cmd msg
+functionWithPattern (ConstructorName id) (({ foo }) as bar) =
+    postWithNoResponse ("/api/foobar" ++ String.fromInt id)
+
+
+myTime : Foo -> Int
+myTime (Foo ({ bar } as model)) =
+    model.bar
+`

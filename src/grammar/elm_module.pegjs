@@ -1,5 +1,5 @@
 Start
-  = __ module:Module __ EOF {
+  = __ module:Module __ {
     return module;
   }
 
@@ -44,6 +44,9 @@ Comma
 
 IdentifierPart
   = [a-z0-9_]i
+
+TypeParameterName
+  = [a-z]+
 
 OperatorPart
   = [+-/*=.<>:&|^?%!]
@@ -208,7 +211,7 @@ TypeAlias "type alias"
   }
 
 TypeParameterList
-  = head:([a-z]+) tail:(__ n:([a-z]+) { return n; }) {
+  = head:(TypeParameterName) tail:(__ n:(TypeParameterName) { return n; }) {
     return [head].concat(tail);
   }
 
@@ -229,9 +232,42 @@ PortDeclaration "port declaration"
     }
   }
 
-FunctionParams
-  = head:(Identifier / '_') tail:(_ name:(Identifier / '_') { return name; })* {
+CommaSeparatedIdentifiers
+  = head:Identifier tail:(__ "," __ identifier:Identifier { return identifier; })* {
     return [head].concat(tail);
+  }
+
+GrossRecordCapture
+  = "{" __ names:CommaSeparatedIdentifiers __ "}" { return names; }
+
+RecordPatternBase
+  = GrossRecordCapture
+  / ( "(" __ p:GrossRecordCapture __ ")" { return p; })
+
+RecordPattern
+  = RecordPatternBase
+
+ConstructorPatternBase
+  = "(" __ ModuleName __ params:FunctionParameter __ ")" { return params; }
+
+ConstructorPattern
+  = ConstructorPatternBase
+
+PatternBase "pattern"
+  = ConstructorPattern / RecordPattern
+
+Pattern "pattern"
+  = ("(" __ params:PatternBase __ "as" __ name:Identifier ")" { return [name].concat(params); })
+  / PatternBase
+
+FunctionParameter "function parameter"
+   = (id:Identifier { return [ id ]; })
+   / ('_' { return [ '_' ]; })
+   / Pattern
+
+FunctionParams "function parameters"
+  = head:(FunctionParameter) tail:(_ n:FunctionParameter { return n; })* {
+    return tail.reduce((acc, val) => acc.concat(val), head)
   }
 
 FunctionAnnotation "function annotation"
