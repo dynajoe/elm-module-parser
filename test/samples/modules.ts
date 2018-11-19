@@ -128,3 +128,16 @@ myTime : Foo -> Int
 myTime (Foo ({ bar } as model)) =
     model.bar
 `
+
+export const PORTS = `
+port load : String -> Cmd msg
+
+
+port modifyUrl : String -> Cmd msg
+
+
+port newUrl : String -> Cmd msg
+
+
+port onUrlChange : (String -> msg) -> Sub msg
+`

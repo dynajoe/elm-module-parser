@@ -62,6 +62,7 @@ describe('exposedOnlyView', () => {
                },
             },
          ],
+         ports: [],
          exposes_all: true,
          exposing: [],
          imports: [],

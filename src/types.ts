@@ -25,6 +25,8 @@ export type FunctionDeclaration = { type: 'function-declaration'; name: string; 
 
 export type FunctionAnnotation = { type: 'function-annotation'; name: string } & Locatable
 
+export type PortAnnotation = { type: 'port-annotation'; name: string } & Locatable
+
 export type TypeAliasDeclaration = { type: 'type-alias'; name: string } & Locatable
 
 export type ConstructorDeclaration = { type: 'constructor'; name: string } & Locatable
@@ -56,6 +58,7 @@ export interface Module {
    types: TypeDeclaration[]
    function_declarations: FunctionDeclaration[]
    function_annotations: FunctionAnnotation[]
+   ports: PortAnnotation[]
    location: Location
 }
 

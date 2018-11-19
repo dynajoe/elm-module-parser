@@ -188,4 +188,22 @@ describe('Module Parser', () => {
          ])
       })
    })
+
+   describe('ports', () => {
+      const input = `${S.MODULE_DECLARATION}\n${S.IMPORT_LIST}\n${S.PORTS}`
+      let result: T.Module = null
+
+      before(() => {
+         result = runParser(input)
+      })
+
+      it('function annotations', () => {
+         expect(result.ports.map(d => ({ name: d.name }))).to.deep.equal([
+            { name: 'load' },
+            { name: 'modifyUrl' },
+            { name: 'newUrl' },
+            { name: 'onUrlChange' },
+         ])
+      })
+   })
 })

@@ -296,6 +296,7 @@ Module
       types: statements ? statements.filter(s => s.type === 'custom-type' || s.type === 'type-alias') : [],
       function_annotations: statements ? statements.filter(s => s.type === 'function-annotation') : [],
       function_declarations: statements ? statements.filter(s => s.type === 'function-declaration') : [],
+      ports: statements ? statements.filter(s => s.type === 'port-declaration') : [],
     };
   }
 
