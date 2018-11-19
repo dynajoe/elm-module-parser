@@ -1,9 +1,10 @@
 {
   "name": "elm-module-parser",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Parses Elm module declaration and import statements.",
   "main": "dist/src/index.js",
   "scripts": {
+    "prepublish": "npm run build",
     "prebuild": "rimraf 'src/**/*.js' 'src/**/*.map' 'test/**/*.js' 'test/**/*.map' dist",
     "build-parser": "mkdir -p ./dist/parsers/ && pegjs -o ./dist/parsers/elm_module_parser.js ./src/grammar/elm_module.pegjs",
     "build-ts": "tsc",
