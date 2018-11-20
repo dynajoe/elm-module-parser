@@ -29,9 +29,11 @@ __ "ws-eol-comment"
 _ "ws-inline-comment"
   = (Ws / MultiLineCommentNoLineTerminator)*
 
-LParen = __ "(" __
+LParen
+  = __ "(" __
 
-RParen = __ ")" __
+RParen
+  = __ ")" __
 
 Equals
   = __ "=" __
@@ -103,11 +105,12 @@ Comment "comment"
   / MultiLineComment
 
 ModulePath
-  = head:ModuleName tail:("." ModuleName)* { return text(); }
+  = head:ModuleName
+    tail:("." ModuleName)* { return text(); }
 
-ModuleNameList =
-  head:ModuleName
-  tail:(Comma m:ModuleName { return m; })* {
+ModuleNameList
+  = head:ModuleName
+    tail:(Comma m:ModuleName { return m; })* {
     return [head].concat(tail);
   }
 
@@ -126,9 +129,9 @@ ExportedModule
   / ctor:ConstructorExport { return ctor; }
   / module:ModuleName { return { type: 'type', name: module, location: location(), }; }
 
-ExposingList =
-  head:ExportedModule
-  tail:(Comma m:ExportedModule { return m; })* {
+ExposingList
+  = head:ExportedModule
+    tail:(Comma m:ExportedModule { return m; })* {
     return [head].concat(tail);
   }
 
@@ -201,7 +204,16 @@ CustomTypeConstructor "custom type constructor"
   }
 
 ConstructorList "custom type constructors"
-  = head:CustomTypeConstructor t:("|" __ c:CustomTypeConstructor { return c; })* { return [head].concat(t); }
+  = head:CustomTypeConstructor
+    tail:("|" __ c:CustomTypeConstructor { return c; })* {
+    return [head].concat(tail);
+  }
+
+CommaSeparatedIdentifiers
+  = head:Identifier
+    tail:(Comma identifier:Identifier { return identifier; })* {
+    return [head].concat(tail);
+  }
 
 TypeAlias "type alias"
   = LineTerminator* TypeAliasToken __ name:(n:ModuleName { return { location: location(), name: n }; }) __ Equals {
@@ -212,25 +224,26 @@ TypeAlias "type alias"
   }
 
 TypeParameterList
-  = head:(TypeParameterName) tail:(__ n:(TypeParameterName) { return n; }) {
+  = head:(TypeParameterName)
+    tail:(__ n:TypeParameterName { return n; }) {
     return [head].concat(tail);
   }
 
 CustomType "custom type declaration"
-    = LineTerminator* TypeToken __ name:(n:ModuleName { return { location: location(), name: n }; }) __ TypeParameterList? __ Equals __ constructors:ConstructorList EOS {
-      return {
-        ...name,
-        constructors: constructors,
-        type: 'custom-type',
-      };
-    }
+  = LineTerminator* TypeToken __ name:(n:ModuleName { return { location: location(), name: n }; }) __ TypeParameterList? __ Equals __ constructors:ConstructorList EOS {
+    return {
+      ...name,
+      constructors: constructors,
+      type: 'custom-type',
+    };
+  }
 
 PortAnnotation "port annotation"
   = LineTerminator* PortToken __ fn:FunctionAnnotation {
     return {
       ...fn,
       type: 'port-annotation'
-    }
+    };
   }
 
 PortDeclaration "port declaration"
@@ -238,45 +251,36 @@ PortDeclaration "port declaration"
     return {
       ...fn,
       type: 'port-declaration'
-    }
+    };
   }
-
-CommaSeparatedIdentifiers
-  = head:Identifier tail:(__ "," __ identifier:Identifier { return identifier; })* {
-    return [head].concat(tail);
-  }
-
-GrossRecordCapture
-  = "{" __ names:CommaSeparatedIdentifiers __ "}" { return names; }
 
 RecordPatternBase
-  = GrossRecordCapture
-  / ( "(" __ p:GrossRecordCapture __ ")" { return p; })
+  = "{" __ names:CommaSeparatedIdentifiers __ "}" { return names; }
 
 RecordPattern
   = RecordPatternBase
-
-ConstructorPatternBase
-  = "(" __ ModuleName __ params:FunctionParameter __ ")" { return params; }
+  / ( "(" __ p:RecordPatternBase __ ")" { return p; })
 
 ConstructorPattern
-  = ConstructorPatternBase
+  = "(" __ ModuleName __ params:FunctionParameter __ ")" { return params; }
 
 PatternBase "pattern"
-  = ConstructorPattern / RecordPattern
+  = ConstructorPattern
+  / RecordPattern
 
 Pattern "pattern"
   = ("(" __ params:PatternBase __ "as" __ name:Identifier ")" { return [name].concat(params); })
   / PatternBase
 
 FunctionParameter "function parameter"
-   = (id:Identifier { return [ id ]; })
-   / ('_' { return [ '_' ]; })
-   / Pattern
+  = (id:Identifier { return [ id ]; })
+  / ('_' { return [ '_' ]; })
+  / Pattern
 
 FunctionParams "function parameters"
-  = head:(FunctionParameter) tail:(_ n:FunctionParameter { return n; })* {
-    return tail.reduce((acc, val) => acc.concat(val), head)
+  = head:(FunctionParameter)
+    tail:(_ n:FunctionParameter { return n; })* {
+    return tail.reduce((acc, val) => acc.concat(val), head);
   }
 
 FunctionAnnotation "function annotation"
@@ -299,20 +303,23 @@ FunctionDeclaration "function declaration"
 Module
   = module:ModuleDeclaration
     statements:SourceElements? {
+    statements = statements || [];
+
     return {
       ...module,
-      imports: statements ? statements.filter(s => s.type === 'import') : [],
-      types: statements ? statements.filter(s => s.type === 'custom-type' || s.type === 'type-alias') : [],
-      function_annotations: statements ? statements.filter(s => s.type === 'function-annotation') : [],
-      function_declarations: statements ? statements.filter(s => s.type === 'function-declaration') : [],
-      port_annotations: statements ? statements.filter(s => s.type === 'port-annotation') : [],
-      port_declarations: statements ? statements.filter(s => s.type === 'port-declaration') : [],
+      imports: statements.filter(s => s.type === 'import'),
+      types: statements.filter(s => s.type === 'custom-type' || s.type === 'type-alias'),
+      function_annotations: statements.filter(s => s.type === 'function-annotation'),
+      function_declarations: statements.filter(s => s.type === 'function-declaration'),
+      port_annotations: statements.filter(s => s.type === 'port-annotation'),
+      port_declarations: statements.filter(s => s.type === 'port-declaration'),
     };
   }
 
 SourceElements
-  = head:SourceElement tail:SourceElement* {
-    return [head].concat(tail)
+  = head:SourceElement
+    tail:SourceElement* {
+    return [head].concat(tail);
   }
 
 EOF

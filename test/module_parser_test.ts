@@ -151,6 +151,19 @@ describe('Module Parser', () => {
       })
    })
 
+   describe('parameterized types', () => {
+      const input = `${S.MODULE_DECLARATION}\n${S.IMPORT_LIST}\n${S.PARAMETERIZED_TYPE}`
+      let result: T.Module = null
+
+      before(() => {
+         result = runParser(input)
+      })
+
+      it('multiple parameters', () => {
+         expect(result.types.map(d => d.name)).to.deep.equal(['Either'])
+      })
+   })
+
    describe('function with let expression', () => {
       const input = `${S.MODULE_DECLARATION}\n${S.IMPORT_LIST}\n${S.FUNCTION_WITH_LET}`
       let result: T.Module = null

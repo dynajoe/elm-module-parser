@@ -89,6 +89,12 @@ type Foo
     | Baz (List Int)
 `.trim()
 
+export const PARAMETERIZED_TYPE = `
+type Either a b
+    = Left a
+    | Right b
+`
+
 export const FUNCTION_WITH_LET = `
 optionalDecoder : Decoder Decode.Value -> Decoder a -> a -> Decoder a
 optionalDecoder pathDecoder valDecoder fallback =
