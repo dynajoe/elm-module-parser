@@ -155,6 +155,7 @@ Statement
   = ImportStatement
   / TypeAlias
   / CustomType
+  / PortAnnotation
   / PortDeclaration
   / FunctionAnnotation
   / FunctionDeclaration
@@ -224,8 +225,16 @@ CustomType "custom type declaration"
       };
     }
 
-PortDeclaration "port declaration"
+PortAnnotation "port annotation"
   = LineTerminator* PortToken __ fn:FunctionAnnotation {
+    return {
+      ...fn,
+      type: 'port-annotation'
+    }
+  }
+
+PortDeclaration "port declaration"
+  = LineTerminator* PortToken __ fn:FunctionDeclaration {
     return {
       ...fn,
       type: 'port-declaration'
@@ -296,7 +305,8 @@ Module
       types: statements ? statements.filter(s => s.type === 'custom-type' || s.type === 'type-alias') : [],
       function_annotations: statements ? statements.filter(s => s.type === 'function-annotation') : [],
       function_declarations: statements ? statements.filter(s => s.type === 'function-declaration') : [],
-      ports: statements ? statements.filter(s => s.type === 'port-declaration') : [],
+      port_annotations: statements ? statements.filter(s => s.type === 'port-annotation') : [],
+      port_declarations: statements ? statements.filter(s => s.type === 'port-declaration') : [],
     };
   }
 

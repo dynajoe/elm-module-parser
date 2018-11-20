@@ -198,8 +198,8 @@ describe('Module Parser', () => {
          result = runParser(input)
       })
 
-      it('function annotations', () => {
-         expect(result.ports.map(d => ({ name: d.name }))).to.deep.equal([
+      it('port annotations', () => {
+         expect(result.port_annotations.map(d => ({ name: d.name }))).to.deep.equal([
             { name: 'load' },
             { name: 'modifyUrl' },
             { name: 'newUrl' },
@@ -221,16 +221,20 @@ describe('Module Parser', () => {
          expect(result.name).to.be.equal('Module')
       })
 
-      it('ports', () => {
-         expect(result.ports.map(d => ({ name: d.name }))).to.deep.equal([{ name: 'somePort' }])
+      it('port annotations', () => {
+         expect(result.port_annotations.map(d => d.name)).to.deep.equal(['somePort'])
       })
 
-      it('infix annotations', () => {
-         expect(result.function_annotations.map(d => ({ name: d.name }))).to.deep.equal([
-            { name: 'function' },
-            { name: '%%' },
-            { name: 'multiLineFunction' },
-         ])
+      it('port declarations', () => {
+         expect(result.port_declarations.map(d => d.name)).to.deep.equal(['somePort'])
+      })
+
+      it('function annotations', () => {
+         expect(result.function_annotations.map(d => d.name)).to.deep.equal(['function', '%%', 'multiLineFunction'])
+      })
+
+      it('function declarations', () => {
+         expect(result.function_declarations.map(d => d.name)).to.deep.equal(['function', '%%', 'multiLineFunction'])
       })
    })
 })
