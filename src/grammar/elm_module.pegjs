@@ -216,7 +216,7 @@ CommaSeparatedIdentifiers
   }
 
 TypeAlias "type alias"
-  = LineTerminator* TypeAliasToken __ name:(n:ModuleName { return { location: location(), name: n }; }) __ Equals {
+  = LineTerminator* TypeAliasToken __ name:(n:ModuleName { return { location: location(), name: n }; }) __ TypeParameterList? __ Equals {
     return {
       ...name,
       type: 'type-alias',
@@ -225,7 +225,7 @@ TypeAlias "type alias"
 
 TypeParameterList
   = head:(TypeParameterName)
-    tail:(__ n:TypeParameterName { return n; }) {
+    tail:(__ n:TypeParameterName { return n; })* {
     return [head].concat(tail);
   }
 

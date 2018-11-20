@@ -90,6 +90,23 @@ type Foo
 `.trim()
 
 export const PARAMETERIZED_TYPE = `
+type ValidRange a
+    = Infinity
+    | LowerInf (RangeBound a)
+    | LowerBounded (LowerBoundedValidRange a)
+    | Empty
+
+
+type LowerBoundedValidRange a
+    = UpperInf (RangeBound a)
+    | Finite (RangeBound a) (RangeBound a)
+
+
+type alias RangeBound a =
+    { bound : a
+    , inclusive : Bool
+    }
+
 type Either a b
     = Left a
     | Right b

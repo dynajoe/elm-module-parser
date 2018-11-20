@@ -160,7 +160,12 @@ describe('Module Parser', () => {
       })
 
       it('multiple parameters', () => {
-         expect(result.types.map(d => d.name)).to.deep.equal(['Either'])
+         expect(result.types.map(d => d.name)).to.deep.equal([
+            'ValidRange',
+            'LowerBoundedValidRange',
+            'RangeBound',
+            'Either',
+         ])
       })
    })
 
