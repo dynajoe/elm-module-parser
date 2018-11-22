@@ -197,7 +197,18 @@ describe('Module Parser', () => {
       })
 
       it('function annotations', () => {
-         expect(result.function_annotations.map(d => d.name)).to.deep.equal(['functionWithPattern', 'myTime'])
+         expect(
+            result.function_annotations.map(d => ({
+               name: d.name,
+               type_annotation: d.type_annotation,
+            }))
+         ).to.deep.equal([
+            {
+               name: 'functionWithPattern',
+               type_annotation: 'TypeName -> { a | foo : Int, bar : String }, (Result Http.Error () -> msg) -> Cmd msg',
+            },
+            { name: 'myTime', type_annotation: 'Foo -> Int' },
+         ])
       })
 
       it('function declarations', () => {

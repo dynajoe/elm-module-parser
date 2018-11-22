@@ -286,8 +286,8 @@ FunctionParams "function parameters"
 
 FunctionAnnotation "function annotation"
   = LineTerminator*
-  	name:(n:FunctionName { return { name: n, location: location(), }; }) __ ":"
-    annotation:($ (!TopLevelStatementStart .)* ) {
+    name:(n:FunctionName { return { name: n, location: location(), }; }) __ ":"
+    _ annotation:($ (!TopLevelStatementStart .)* ) {
     return {
       ...name,
       type: 'function-annotation',
