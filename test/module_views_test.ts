@@ -56,6 +56,7 @@ describe('exposedOnlyView', () => {
             {
                name: 'foo',
                type: 'function-annotation',
+               type_annotation: '',
                location: {
                   start: { column: 0, line: 3, offset: 5 },
                   end: { column: 0, line: 3, offset: 6 },

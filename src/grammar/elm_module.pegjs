@@ -193,6 +193,7 @@ TopLevelStatementStart
     / ImportToken
     / FunctionName
     / PortToken
+    / Identifier
   )
 
 CustomTypeConstructor "custom type constructor"
@@ -284,10 +285,13 @@ FunctionParams "function parameters"
   }
 
 FunctionAnnotation "function annotation"
-  = LineTerminator* name:(n:FunctionName { return { name: n, location: location(), }; }) __ ":" {
+  = LineTerminator*
+  	name:(n:FunctionName { return { name: n, location: location(), }; }) __ ":"
+    annotation:($ (!TopLevelStatementStart .)* ) {
     return {
       ...name,
       type: 'function-annotation',
+      type_annotation: annotation,
     };
   }
 

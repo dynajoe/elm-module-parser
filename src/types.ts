@@ -23,11 +23,11 @@ export type Exposed = { type: 'type' | 'function' | 'constructor'; name: string;
 
 export type FunctionDeclaration = { type: 'function-declaration'; name: string; parameters: string[] } & Locatable
 
-export type FunctionAnnotation = { type: 'function-annotation'; name: string } & Locatable
+export type FunctionAnnotation = { type: 'function-annotation'; name: string; type_annotation: string } & Locatable
 
 export type PortDeclaration = { type: 'port-declaration'; name: string; parameters: string[] } & Locatable
 
-export type PortAnnotation = { type: 'port-annotation'; name: string } & Locatable
+export type PortAnnotation = { type: 'port-annotation'; name: string; type_annotation: string } & Locatable
 
 export type TypeAliasDeclaration = { type: 'type-alias'; name: string } & Locatable
 
