@@ -6,7 +6,7 @@
   "scripts": {
     "prepublish": "npm run build",
     "prebuild": "rimraf 'src/**/*.js' 'src/**/*.map' 'test/**/*.js' 'test/**/*.map' dist",
-    "build-parser": "mkdir -p ./dist/parsers/ && pegjs -o ./dist/parsers/elm_module_parser.js ./src/grammar/elm_module.pegjs",
+    "build-parser": "mkdir -p ./dist/parsers/ && pegjs -o ./dist/parsers/elm_module_parser.js ./src/grammar/elm_module.elm.pegjs",
     "build-ts": "tsc",
     "build": "npm run build-parser && npm run build-ts",
     "pretest": "npm run build",
