@@ -255,6 +255,17 @@ PortDeclaration "port declaration"
     };
   }
 
+UnitPattern
+  = "()"
+
+AnythingPattern
+  = "_"
+
+TuplePattern
+  = "(" __ a:Pattern b:(__ "," __ p:Pattern { return p; })+ __ ")" {
+    return b.reduce((acc, val) => acc.concat(val), a);
+  }
+
 RecordPatternBase
   = "{" __ names:CommaSeparatedIdentifiers __ "}" { return names; }
 
@@ -268,15 +279,17 @@ ConstructorPattern
 PatternBase "pattern"
   = ConstructorPattern
   / RecordPattern
+  / TuplePattern
+  / id:Identifier { return [ id ]; }
+  / UnitPattern { return ["()"]; }
+  / AnythingPattern { return ["_"]; }
 
 Pattern "pattern"
   = ("(" __ params:PatternBase __ "as" __ name:Identifier ")" { return [name].concat(params); })
   / PatternBase
 
 FunctionParameter "function parameter"
-  = (id:Identifier { return [ id ]; })
-  / ('_' { return [ '_' ]; })
-  / Pattern
+  = Pattern
 
 FunctionParams "function parameters"
   = head:(FunctionParameter)

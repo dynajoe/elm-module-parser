@@ -208,6 +208,8 @@ describe('Module Parser', () => {
                type_annotation: 'TypeName -> { a | foo : Int, bar : String }, (Result Http.Error () -> msg) -> Cmd msg',
             },
             { name: 'myTime', type_annotation: 'Foo -> Int' },
+            { name: 'tuplePatterns', type_annotation: '(Int, Int) -> Int' },
+            { name: 'unitPattern', type_annotation: '() -> Int' },
          ])
       })
 
@@ -215,6 +217,8 @@ describe('Module Parser', () => {
          expect(result.function_declarations.map(d => ({ name: d.name, parameters: d.parameters }))).to.deep.equal([
             { name: 'functionWithPattern', parameters: ['id', 'bar', 'foo'] },
             { name: 'myTime', parameters: ['model', 'bar'] },
+            { name: 'tuplePatterns', parameters: ['a', 'b'] },
+            { name: 'unitPattern', parameters: ['()'] },
          ])
       })
    })

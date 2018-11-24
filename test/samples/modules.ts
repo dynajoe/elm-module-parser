@@ -150,6 +150,12 @@ functionWithPattern (ConstructorName id) (({ foo }) as bar) =
 myTime : Foo -> Int
 myTime (Foo ({ bar } as model)) =
     model.bar
+
+tuplePatterns : (Int, Int) -> Int
+tuplePatterns (a, b) = a
+
+unitPattern : () -> Int
+unitPattern () = 1
 `
 
 export const PORTS = `
