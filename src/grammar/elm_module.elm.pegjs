@@ -262,7 +262,7 @@ AnythingPattern
   = "_"
 
 TuplePattern
-  = "(" __ a:Pattern b:(__ "," __ p:Pattern { return p; })+ __ ")" {
+  = "(" __ a:FunctionPattern b:(__ "," __ p:FunctionPattern { return p; })+ __ ")" {
     return b.reduce((acc, val) => acc.concat(val), a);
   }
 
@@ -276,7 +276,7 @@ RecordPattern
 ConstructorPattern
   = "(" __ ModuleName __ params:FunctionParameter __ ")" { return params; }
 
-PatternBase "pattern"
+FunctionPatternBase "function pattern"
   = ConstructorPattern
   / RecordPattern
   / TuplePattern
@@ -284,12 +284,12 @@ PatternBase "pattern"
   / UnitPattern { return ["()"]; }
   / AnythingPattern { return ["_"]; }
 
-Pattern "pattern"
-  = ("(" __ params:PatternBase __ "as" __ name:Identifier ")" { return [name].concat(params); })
-  / PatternBase
+FunctionPattern "function pattern"
+  = ("(" __ params:FunctionPatternBase __ "as" __ name:Identifier ")" { return [name].concat(params); })
+  / FunctionPatternBase
 
 FunctionParameter "function parameter"
-  = Pattern
+  = FunctionPattern
 
 FunctionParams "function parameters"
   = head:(FunctionParameter)
