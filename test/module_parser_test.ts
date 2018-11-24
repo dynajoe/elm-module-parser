@@ -210,6 +210,7 @@ describe('Module Parser', () => {
             { name: 'myTime', type_annotation: 'Foo -> Int' },
             { name: 'tuplePatterns', type_annotation: '(Int, Int) -> Int' },
             { name: 'unitPattern', type_annotation: '() -> Int' },
+            { name: 'emptyRecordPattern', type_annotation: '{ a | b : Int } -> Int' },
          ])
       })
 
@@ -219,6 +220,7 @@ describe('Module Parser', () => {
             { name: 'myTime', parameters: ['model', 'bar'] },
             { name: 'tuplePatterns', parameters: ['a', 'b'] },
             { name: 'unitPattern', parameters: ['()'] },
+            { name: 'emptyRecordPattern', parameters: [] },
          ])
       })
    })

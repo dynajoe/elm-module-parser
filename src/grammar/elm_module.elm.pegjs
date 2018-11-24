@@ -267,7 +267,7 @@ TuplePattern
   }
 
 RecordPatternBase
-  = "{" __ names:CommaSeparatedIdentifiers __ "}" { return names; }
+  = "{" __ names:CommaSeparatedIdentifiers? __ "}" { return names || []; }
 
 RecordPattern
   = RecordPatternBase

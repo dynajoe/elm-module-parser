@@ -156,6 +156,9 @@ tuplePatterns (a, b) = a
 
 unitPattern : () -> Int
 unitPattern () = 1
+
+emptyRecordPattern : { a | b : Int } -> Int
+emptyRecordPattern {} = 1
 `
 
 export const PORTS = `
