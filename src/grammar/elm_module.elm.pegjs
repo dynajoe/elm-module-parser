@@ -1,3 +1,17 @@
+{
+  var assign = (this && this.assign) || function () {
+    assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return assign.apply(this, arguments);
+  };
+}
+
 Start
   = __ module:Module __ {
     return module;
@@ -116,12 +130,11 @@ ModuleNameList
 
 ConstructorExport
   = name:(n:ModuleName { return { name: n, location: location(), }; }) LParen exposing:(ExposingAllToken { return 'all'; } / ModuleNameList) RParen {
-      return {
-        ...name,
+      return assign({}, name, {
         type: 'constructor',
         exposing: exposing === 'all' || exposing == null ? [] : exposing,
         exposes_all: exposing === 'all',
-      };
+      });
     }
 
 ExportedModule
@@ -146,12 +159,11 @@ ModuleDeclaration "module declaration"
     ModuleToken _
     name:(n:ModulePath { return { location: location(), name: n, }; })
     exposing:(__ e:ModuleExports { return e; } )? {
-      return {
-        ...name,
+      return assign({}, name, {
         type: port ? 'port-module' : 'module',
         exposing: exposing === 'all' || exposing == null ? [] : exposing,
         exposes_all: exposing === 'all',
-      };
+      });
    }
 
 Statement
@@ -198,10 +210,9 @@ TopLevelStatementStart
 
 CustomTypeConstructor "custom type constructor"
   = name:(n:ModuleName { return { location: location(), name: n }; }) (!TopLevelStatementStart !"|" .)* {
-    return {
-      ...name,
+    return assign({}, name, {
       type: 'constructor',
-    };
+    });
   }
 
 ConstructorList "custom type constructors"
@@ -218,10 +229,9 @@ CommaSeparatedIdentifiers
 
 TypeAlias "type alias"
   = LineTerminator* TypeAliasToken __ name:(n:ModuleName { return { location: location(), name: n }; }) __ TypeParameterList? __ Equals {
-    return {
-      ...name,
+    return assign({}, name, {
       type: 'type-alias',
-    };
+    });
   }
 
 TypeParameterList
@@ -232,27 +242,24 @@ TypeParameterList
 
 CustomType "custom type declaration"
   = LineTerminator* TypeToken __ name:(n:ModuleName { return { location: location(), name: n }; }) __ TypeParameterList? __ Equals __ constructors:ConstructorList EOS {
-    return {
-      ...name,
+    return assign({}, name, {
       constructors: constructors,
       type: 'custom-type',
-    };
+    });
   }
 
 PortAnnotation "port annotation"
   = LineTerminator* PortToken __ fn:FunctionAnnotation {
-    return {
-      ...fn,
+    return assign({}, fn, {
       type: 'port-annotation'
-    };
+    });
   }
 
 PortDeclaration "port declaration"
   = LineTerminator* PortToken __ fn:FunctionDeclaration {
-    return {
-      ...fn,
+    return assign({}, fn, {
       type: 'port-declaration'
-    };
+    });
   }
 
 UnitPattern
@@ -301,20 +308,18 @@ FunctionAnnotation "function annotation"
   = LineTerminator*
     name:(n:FunctionName { return { name: n, location: location(), }; }) __ ":"
     _ annotation:($ (!TopLevelStatementStart .)* ) {
-    return {
-      ...name,
+    return assign({}, name, {
       type: 'function-annotation',
       type_annotation: annotation,
-    };
+    });
   }
 
 FunctionDeclaration "function declaration"
   = LineTerminator* name:(n:FunctionName { return { name: n, location: location(), }; }) __ params:FunctionParams? __ "=" {
-    return {
-      ...name,
+    return assign({}, name, {
       type: 'function-declaration',
       parameters: params ? params : [],
-    };
+    });
   }
 
 Module
@@ -322,15 +327,14 @@ Module
     statements:SourceElements? {
     statements = statements || [];
 
-    return {
-      ...module,
+    return assign({}, module, {
       imports: statements.filter(s => s.type === 'import'),
       types: statements.filter(s => s.type === 'custom-type' || s.type === 'type-alias'),
       function_annotations: statements.filter(s => s.type === 'function-annotation'),
       function_declarations: statements.filter(s => s.type === 'function-declaration'),
       port_annotations: statements.filter(s => s.type === 'port-annotation'),
       port_declarations: statements.filter(s => s.type === 'port-declaration'),
-    };
+    });
   }
 
 SourceElements
